@@ -21,7 +21,7 @@ public class CartItem {
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "shoe_variant_id", nullable = false) // Updated reference to ShoeVariant
+    @JoinColumn(name = "shoe_variant_id", nullable = false)
     private ShoeVariant shoeVariant;
 
     @Column(nullable = false)
