@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "shoe_variants") // Renamed from "shoe_colors" to reflect its role
+@Table(name = "shoe_variants")
 @Getter
 @Setter
 @NoArgsConstructor
