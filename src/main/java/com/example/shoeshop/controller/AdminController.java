@@ -1,7 +1,11 @@
 package com.example.shoeshop.controller;
 
+import com.example.shoeshop.dto.ShoeDto;
+import com.example.shoeshop.mapper.ShoeMapper;
 import com.example.shoeshop.model.*;
 import com.example.shoeshop.service.*;
+import com.example.shoeshop.view.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +25,14 @@ public class AdminController {
     private final CompanyService companyService;
     private final ShoeVariantService shoeVariantService;
     private final ShoeImageService shoeImageService;
+    private final ShoeMapper shoeMapper;
 
     @PostMapping("/shoes")
     public ResponseEntity<Shoe> createShoe(@RequestBody Shoe shoe) {
         return ResponseEntity.ok(shoeService.createShoe(shoe));
     }
 
+    @JsonView(Views.Admin.class)
     @GetMapping("/shoes")
     public ResponseEntity<List<Shoe>> getAllShoes() {
         return ResponseEntity.ok(shoeService.getAllShoes());
@@ -35,6 +41,25 @@ public class AdminController {
     @PutMapping("/shoes/{id}")
     public ResponseEntity<Shoe> updateShoe(@PathVariable Long id, @RequestBody Shoe updatedShoe) {
         return ResponseEntity.ok(shoeService.updateShoe(id, updatedShoe));
+    }
+    
+    // New endpoints for relationship modification
+    @JsonView(Views.Admin.class)
+    @PatchMapping("/shoes/{shoeId}/category/{categoryId}")
+    public ResponseEntity<ShoeDto> updateShoeCategory(
+            @PathVariable Long shoeId, 
+            @PathVariable Long categoryId) {
+        Shoe shoe = shoeService.updateShoeCategory(shoeId, categoryId);
+        return ResponseEntity.ok(shoeMapper.toDto(shoe));
+    }
+    
+    @JsonView(Views.Admin.class)
+    @PatchMapping("/shoes/{shoeId}/company/{companyId}")
+    public ResponseEntity<ShoeDto> updateShoeCompany(
+            @PathVariable Long shoeId, 
+            @PathVariable Long companyId) {
+        Shoe shoe = shoeService.updateShoeCompany(shoeId, companyId);
+        return ResponseEntity.ok(shoeMapper.toDto(shoe));
     }
 
     @DeleteMapping("/shoes/{id}")

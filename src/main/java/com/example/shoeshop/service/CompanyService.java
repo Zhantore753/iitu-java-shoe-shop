@@ -20,4 +20,20 @@ public class CompanyService {
     public List<Company> getAllCompanies() {
         return companyRepository.findAll();
     }
+
+    public Company getCompanyById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found with id: " + id));
+    }
+
+    public Company updateCompany(Long id, Company updatedCompany) {
+        Company company = getCompanyById(id);
+        company.setName(updatedCompany.getName());
+        // Update other fields as necessary
+        return companyRepository.save(company);
+    }
+
+    public void deleteCompany(Long id) {
+        companyRepository.deleteById(id);
+    }
 }

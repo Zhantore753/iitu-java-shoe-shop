@@ -4,12 +4,14 @@ import com.example.shoeshop.model.User;
 import com.example.shoeshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Order(1)
 public class AdminSeed implements CommandLineRunner {
 
     private final UserRepository userRepository;

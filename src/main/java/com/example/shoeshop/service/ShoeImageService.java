@@ -1,36 +1,45 @@
 package com.example.shoeshop.service;
 
 import com.example.shoeshop.model.ShoeImage;
+import com.example.shoeshop.model.ShoeVariant;
 import com.example.shoeshop.repository.ShoeImageRepository;
+import com.example.shoeshop.repository.ShoeVariantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ShoeImageService {
 
     private final ShoeImageRepository shoeImageRepository;
-    private final String UPLOAD_DIR = "uploads/";
+    private final ShoeVariantRepository shoeVariantRepository;
 
-    public ShoeImage uploadImage(Long shoeVariantId, MultipartFile file) {
+    public ShoeImage uploadImage(Long variantId, MultipartFile file) {
         try {
-            // Generate a unique filename
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Path.of(UPLOAD_DIR, fileName);
-
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            ShoeImage shoeImage = new ShoeImage();
-            shoeImage.setImageUrl("/uploads/" + fileName);
-            return shoeImageRepository.save(shoeImage);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to upload file", e);
+            ShoeVariant variant = shoeVariantRepository.findById(variantId)
+                    .orElseThrow(() -> new IllegalArgumentException("Shoe variant not found"));
+            
+            ShoeImage image = new ShoeImage();
+            image.setShoeVariant(variant);
+            image.setImageData(file.getBytes());
+            image.setFileName(file.getOriginalFilename());
+            image.setFileType(file.getContentType());
+            
+            return shoeImageRepository.save(image);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image", e);
         }
+    }
+
+    public List<ShoeImage> getImagesByVariantId(Long variantId) {
+        return shoeImageRepository.findByShoeVariantId(variantId);
+    }
+    
+    public void deleteImage(Long id) {
+        shoeImageRepository.deleteById(id);
     }
 }
